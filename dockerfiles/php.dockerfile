@@ -10,6 +10,9 @@ FROM php:${PHP_VERSION}-${TYP} as base
 ARG PHP_EXTENSIONS=${PHP_EXTENSIONS}
 ARG BASH_EXTENSIONS=${BASH_EXTENSIONS}
 
+#update/upgrade packages
+RUN apt-get update -y && apt-get upgrade -y
+
 #install bash extensions as defined in .env file
 RUN apt-get install ${BASH_EXTENSIONS} -y
 
@@ -28,9 +31,6 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/do
 RUN chmod +x /usr/local/bin/install-php-extensions && \
     mkdir -p /usr/local/etc/php/conf.d/php_ini_files && \
     install-php-extensions ${PHP_EXTENSIONS}
-
-#update/upgrade packages
-RUN apt-get update -y && apt-get upgrade -y
 
 ##########################################################################################################
 
