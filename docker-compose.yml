@@ -33,6 +33,8 @@ services:
       - ~/.ssh:/root/.ssh
       - ~/.gitconfig:/root/.gitconfig
       - ~/.composer:/root/.composer/
+      - ./data/php/zzz-docker.conf:/usr/local/etc/php-fpm.d/zzz-docker.conf # Mount FPM config that runs FPM as root
+    command: php-fpm -R
   cli:
     image: php:${PHP_VERSION}-cli
     build:
