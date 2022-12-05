@@ -14,6 +14,8 @@ services:
       - ./data/apache/wildcard.conf:/etc/apache2/sites-available/000-default.conf
     depends_on:
       - php
+    extra_hosts:
+      - "whiffersnifferapi.test:192.168.2.108"
   php:
     image: php:${PHP_VERSION}-fpm
     build:
@@ -35,6 +37,8 @@ services:
       - ~/.composer:/root/.composer/
       - ./data/php/zzz-docker.conf:/usr/local/etc/php-fpm.d/zzz-docker.conf # Mount FPM config that runs FPM as root
     command: php-fpm -R
+    extra_hosts:
+      - "whiffersnifferapi.test:192.168.2.108"
   cli:
     image: php:${PHP_VERSION}-cli
     build:
@@ -53,20 +57,31 @@ services:
       - ~/.ssh:/root/.ssh
       - ~/.gitconfig:/root/.gitconfig
       - ~/.composer:/root/.composer/
-  db:
-    image: mariadb:latest
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
+    extra_hosts:
+      - "whiffersnifferapi.test:192.168.2.108"
+  whiffersnifferapi:
+    image: whiffersnifferapi
+    build:
+      context: ./WhifferSnifferAPI
+      dockerfile: Dockerfile
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - ./databases:/var/lib/mysql
+      - ASPNETCORE_URLS=http://+:5036
     ports:
-      - 3306:3306
+      - "5036:5036"
+    extra_hosts:
+      - "whiffersnifferapi.test:192.168.2.108"
+  whiffersnifferdb:
+    image: mysql
+    environment:
+       - MYSQL_ROOT_PASSWORD=durstloescher1337!
+    ports:
+       - "3306:3306"
+    extra_hosts:
+      - "whiffersnifferapi.test:192.168.2.108"
   phpmyadmin:
     image: phpmyadmin:latest
     restart: always
     environment:
-      - PMA_HOST=db
+      - PMA_HOST=whiffersnifferdb
     ports:
       - 8080:80
