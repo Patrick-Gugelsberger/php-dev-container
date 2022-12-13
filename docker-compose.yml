@@ -15,7 +15,7 @@ services:
     depends_on:
       - php
     extra_hosts:
-      - "whiffersnifferapi.test:192.168.2.108"
+      - "whiffersnifferapi.test:${IP}"
   php:
     image: php:${PHP_VERSION}-fpm
     build:
@@ -38,7 +38,7 @@ services:
       - ./data/php/zzz-docker.conf:/usr/local/etc/php-fpm.d/zzz-docker.conf # Mount FPM config that runs FPM as root
     command: php-fpm -R
     extra_hosts:
-      - "whiffersnifferapi.test:192.168.2.108"
+      - "whiffersnifferapi.test:${IP}"
   cli:
     image: php:${PHP_VERSION}-cli
     build:
@@ -58,7 +58,7 @@ services:
       - ~/.gitconfig:/root/.gitconfig
       - ~/.composer:/root/.composer/
     extra_hosts:
-      - "whiffersnifferapi.test:192.168.2.108"
+      - "whiffersnifferapi.test:${IP}"
   whiffersnifferapi:
     image: whiffersnifferapi
     build:
@@ -69,15 +69,17 @@ services:
     ports:
       - "5036:5036"
     extra_hosts:
-      - "whiffersnifferapi.test:192.168.2.108"
+      - "whiffersnifferapi.test:${IP}"
   whiffersnifferdb:
     image: mysql
     environment:
-       - MYSQL_ROOT_PASSWORD=durstloescher1337!
+      - MYSQL_ROOT_PASSWORD=durstloescher1337!
+    volumes:
+      - ./databases:/var/lib/mysql
     ports:
-       - "3306:3306"
+      - "3306:3306"
     extra_hosts:
-      - "whiffersnifferapi.test:192.168.2.108"
+      - "whiffersnifferapi.test:${IP}"
   phpmyadmin:
     image: phpmyadmin:latest
     restart: always
