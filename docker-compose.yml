@@ -1,64 +1,52 @@
-version: '3.9'
+version: '3'
 services:
   web:
-    image: ubuntu/apache2:latest
+    image: php:${PHP_VERSION}-apache
     build:
       context: ./dockerfiles
-      dockerfile: apache.dockerfile
+      dockerfile: web.dockerfile
       args:
         - APACHE_EXTENSIONS=${APACHE_EXTENSIONS}
+        - PHP_EXTENSIONS=${PHP_EXTENSIONS}
+        - PHP_VERSION=${PHP_VERSION}
+        - NAME=${NAME}
+    user: ${UID}:${GID}
     ports:
       - 80:80
+      - 443:443
     volumes:
       - ${WORKDIR}:/var/www/html/
       - ./data/apache/wildcard.conf:/etc/apache2/sites-available/000-default.conf
-    depends_on:
-      - php
-  php:
-    image: php:${PHP_VERSION}-fpm
-    build:
-      context: ./dockerfiles
-      dockerfile: php.dockerfile
-      args:
-        - WORKDIR=${WORKDIR}
-        - PHP_VERSION=${PHP_VERSION}
-        - PHP_EXTENSIONS=${PHP_EXTENSIONS}
-        - TYP=fpm
-      target: fpm
-    expose:
-      - 9000
-    volumes:
-      - ${WORKDIR}:/var/www/html/
-      - ./data/php:/usr/local/etc/php/conf.d/php_ini_files
-      - ~/.ssh:/root/.ssh
-      - ~/.gitconfig:/root/.gitconfig
-      - ~/.composer:/root/.composer/
-      - ./data/php/zzz-docker.conf:/usr/local/etc/php-fpm.d/zzz-docker.conf # Mount FPM config that runs FPM as root
-    command: php-fpm -R
+      - ./data/php/php.ini:/usr/local/etc/php/php.ini
+      - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    extra_hosts:
+        host.docker.internal: host-gateway
   cli:
     image: php:${PHP_VERSION}-cli
-    build:
+    build: 
       context: ./dockerfiles
-      dockerfile: php.dockerfile
-      target: cli
+      dockerfile: cli.dockerfile
       args:
-        - BASH_EXTENSIONS=${BASH_EXTENSIONS}
-        - PHP_VERSION=${PHP_VERSION}
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
-        - TYP=cli
+        - PHP_VERSION=${PHP_VERSION}
+        - BASH_EXTENSIONS=${BASH_EXTENSIONS}
         - NODE_VERSION=${NODE_VERSION}
+        - NAME=${NAME}
+    user: ${UID}:${GID}
     volumes:
-      - ${WORKDIR}:/var/www/html/
-      - ./data/php:/usr/local/etc/php/conf.d/php_ini_files
-      - ~/.ssh:/root/.ssh
-      - ~/.gitconfig:/root/.gitconfig
-      - ~/.composer:/root/.composer/
+     - ~/.ssh:/home/${NAME}/.ssh
+     - ~/.gitconfig:/home/${NAME}/.gitconfig
+     - ${WORKDIR}:/var/www/html/
+     - ./data/php/php.ini:/usr/local/etc/php/php.ini
+     - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    extra_hosts:
+        host.docker.internal: host-gateway
   db:
     image: mariadb:latest
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - ./databases:/var/lib/mysql
     ports:
