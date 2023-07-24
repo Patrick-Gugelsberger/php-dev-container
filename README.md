@@ -72,7 +72,7 @@ If you'd wish to change the domain ending it has to be changed in **./data/apach
         > acrylic dns for windows
         > https://mayakron.altervista.org/support/acrylic/Home.htm
 
-6. **.ssh** and **.gitconfig** for the **cli** image will be mounted from the host home directory to the container root user directory. So the files need to be created and stored on the host first.
+6. **.ssh** and **.gitconfig** for the **cli** image will be mounted from the host home directory to the container user home directory as defined in the .env file. So the files need to be created and stored on the host first.
 
 7. **php.ini** changes can be made in **./data/php/php.ini**, the container needs to be restarted afterwards with `docker compose restart`.
 
