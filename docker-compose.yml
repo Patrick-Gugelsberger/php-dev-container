@@ -1,7 +1,7 @@
 version: '3'
 services:
   web:
-    image: php:${PHP_VERSION}-apache
+    image: ubuntu/apache2:latest
     build:
       context: ./dockerfiles
       dockerfile: web.dockerfile
@@ -21,6 +21,57 @@ services:
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     extra_hosts:
         host.docker.internal: host-gateway
+  php-8.0:
+    image: php:8.0-fpm
+    build: 
+      context: ./dockerfiles
+      dockerfile: fpm.dockerfile
+      args:
+        - PHP_EXTENSIONS=${PHP_EXTENSIONS}
+        - PHP_VERSION=8.0
+        - NAME=${NAME}
+    volumes:
+      - ${WORKDIR}:/var/www/html/
+      - ./data/php/php.ini:/usr/local/etc/php/php.ini
+      - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    expose:
+      - 9000
+    extra_hosts:
+      host.docker.internal: host-gateway
+  php-8.1:
+    image: php:8.1-fpm
+    build: 
+      context: ./dockerfiles
+      dockerfile: fpm.dockerfile
+      args:
+        - PHP_EXTENSIONS=${PHP_EXTENSIONS}
+        - PHP_VERSION=8.1
+        - NAME=${NAME}
+    volumes:
+      - ${WORKDIR}:/var/www/html/
+      - ./data/php/php.ini:/usr/local/etc/php/php.ini
+      - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    expose:
+      - 9000
+    extra_hosts:
+      host.docker.internal: host-gateway
+  php-8.2:
+    image: php:8.2-fpm
+    build: 
+      context: ./dockerfiles
+      dockerfile: fpm.dockerfile
+      args:
+        - PHP_EXTENSIONS=${PHP_EXTENSIONS}
+        - PHP_VERSION=8.2
+        - NAME=${NAME}
+    volumes:
+      - ${WORKDIR}:/var/www/html/
+      - ./data/php/php.ini:/usr/local/etc/php/php.ini
+      - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    expose:
+      - 9000
+    extra_hosts:
+      host.docker.internal: host-gateway
   cli:
     image: php:${PHP_VERSION}-cli
     build: 
