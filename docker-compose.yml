@@ -30,6 +30,7 @@ services:
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
         - PHP_VERSION=8.0
         - NAME=${NAME}
+    user: ${UID}:${GID}
     volumes:
       - ${WORKDIR}:/var/www/html/
       - ./data/php/php.ini:/usr/local/etc/php/php.ini
@@ -47,6 +48,7 @@ services:
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
         - PHP_VERSION=8.1
         - NAME=${NAME}
+    user: ${UID}:${GID}
     volumes:
       - ${WORKDIR}:/var/www/html/
       - ./data/php/php.ini:/usr/local/etc/php/php.ini
@@ -64,6 +66,7 @@ services:
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
         - PHP_VERSION=8.2
         - NAME=${NAME}
+    user: ${UID}:${GID}
     volumes:
       - ${WORKDIR}:/var/www/html/
       - ./data/php/php.ini:/usr/local/etc/php/php.ini
@@ -96,6 +99,7 @@ services:
     image: mariadb:latest
     restart: always
     environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
