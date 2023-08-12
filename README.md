@@ -13,7 +13,8 @@ It uses **MariaDB** on port 3306 for access with a prefered db client.
 **PhpMyAdmin** is included on port 8080 to access the database from browser without external db client.
 
 ## Used Images
->- php:apache
+>- ubuntu:apache2
+>- php:fpm
 >- php:cli
 >- mariadb:latest
 >- phpmyadmin:latest
@@ -25,7 +26,7 @@ It uses **MariaDB** on port 3306 for access with a prefered db client.
 >- **WORKDIR**
 >The relative path to the directory containing all your projects. 
 >- **PHP_VERSION**
-> The desired PHP version, uncomment desired version, leave rest commented.
+> The desired PHP version for the cli container, uncomment desired version, leave rest commented.
 >- **PHP_EXTENSIONS**
 > The PHP extensions that should be installed on image build. Enter space separated. If new modules are added after initial build process, repeat build process using `docker compose build web` and `docker compose build cli`
 >- **MYSQL_DATABASE (optional)**
@@ -50,13 +51,15 @@ Required Modules: vhost_alias rewrite proxy_fcgi
 >- **GID**
 > The groupID which will be used in the cli image (should be 1000 in most cases)
 
-2. Use `docker compose --build` this will start pulling and building the images. This process will take a lot of time so be patient. If the **PHP_VERSION** is changed in the **.env** file the build process needs to be repeated. This step is only needed once for every **PHP_VERSION** IF you need them.
+2. Use `docker compose --build` this will start pulling and building the images. This process will take a lot of time so be patient. If the **PHP_VERSION** is changed in the **.env** file the build process for the cli container needs to be repeated. This step is only needed once for every **PHP_VERSION** if you need them.
 
-3. Once the images are built, the container can be started with `docker compose up -d`.
+3. If you need to switch the server php-fpm version, create an empty file in your project root with one of the following names: php8.0 / php8.1 / php8.2 no restart required.
 
-4. All your projects will be reachable via wildcard domain, the pattern is **foldername.test** to reach the **root** of your project or **foldername.public.test** to reach the **public** folder of your project, if you wish to change the domain ending it has to be changed in **./data/apache/wildcard.conf** on line 2
+4. Once the images are built, the container can be started with `docker compose up -d`.
 
-5. There are multiple ways to reach wildcard domains:
+5. All your projects will be reachable via wildcard domain, the pattern is **foldername.test** to reach the **root** of your project or **foldername.public.test** to reach the **public** folder of your project, if you wish to change the domain ending it has to be changed in **./data/apache/wildcard.conf** on line 2
+
+6. There are multiple ways to reach wildcard domains:
     1. Edit your local host file and add entries in the following pattern:
         > 127.0.0.1 foldername.test
         > ::1 foldername.test
@@ -69,12 +72,12 @@ Required Modules: vhost_alias rewrite proxy_fcgi
         > acrylic dns for windows
         > https://mayakron.altervista.org/support/acrylic/Home.htm
 
-6. **.ssh** and **.gitconfig** for the **cli** image will be mounted from host home directory to container root user directory so the files need to be created and stored on host first.
+7. **.ssh** and **.gitconfig** for the **cli** image will be mounted from host home directory to container root user directory so the files need to be created and stored on host first.
 
-7. **php.ini** changes can be made in **./data/php/php.ini**, the container needs to be restarted afterwards with `docker compose restart`.
+8. **php.ini** changes can be made in **./data/php/php.ini**, the container needs to be restarted afterwards with `docker compose restart`.
 
-8. **xdebug.ini** changes can be made in **./data/php/xdebug.ini**, the container needs to be restarted afterwards with `docker compose restart`.
+9. **xdebug.ini** changes can be made in **./data/php/xdebug.ini**, the container needs to be restarted afterwards with `docker compose restart`.
 
-9. **MariaDB Database** can be accessed with external database management tool like **dbeaver** and alike using **localhost:3306** as host. If you don't wish to use an external database tool you can use **phpmyadmin** in your browser by visiting **localhost:8080**. Databases will be persisted in **./databases** folder.
+10. **MariaDB Database** can be accessed with external database management tool like **dbeaver** and alike using **localhost:3306** as host. If you don't wish to use an external database tool you can use **phpmyadmin** in your browser by visiting **localhost:8080**. Databases will be persisted in **./databases** folder.
 
-10. To access the **bash cli** run the following command to start a cli container which closes itself after exiting: `docker compose run --rm cli`
+11. To access the **bash cli** run the following command to start a cli container which closes itself after exiting: `docker compose run --rm cli`
