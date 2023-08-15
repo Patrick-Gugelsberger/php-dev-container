@@ -44,12 +44,14 @@ It uses **MariaDB** on port 3306 for access with a prefered db client.
 >- **APACHE_EXTENSIONS**
 > The desired apache modules which should be enabled. Enter space separated. If new modules are added after initial build process, repeat build process using `docker compose build web`
 Required Modules: vhost_alias rewrite proxy_fcgi
->- **NAME**
+>- **USERNAME**
 > The desired username which will be used in the cli image
 >- **UID**
 > The userID which will be used in the cli image (should be 1000 in most cases)
 >- **GID**
 > The groupID which will be used in the cli image (should be 1000 in most cases)
+>- **IPV4**
+> The desired IPv4 address used in the cli image. Can range from 192.168.2.0 to 192.168.2.
 
 2. Use `docker compose --build` this will start pulling and building the images. This process will take a lot of time so be patient. If the **PHP_VERSION** is changed in the **.env** file the build process for the cli container needs to be repeated. This step is only needed once for every **PHP_VERSION** if you need them.
 
@@ -61,22 +63,29 @@ Required Modules: vhost_alias rewrite proxy_fcgi
 
 6. There are multiple ways to reach wildcard domains:
     1. Edit your local host file and add entries in the following pattern:
-        > 127.0.0.1 foldername.test  
+        > 127.0.0.1 foldername.test \
         > ::1 foldername.test
     2. (Recommended)
     Use a service like **dnsmasq** for mac/linux or **acrylic dns** for windows to support wildcard dns. (look up tutorials for usage)
-        > dnsmasq for mac
-        > https://formulae.brew.sh/formula/dnsmasq
-        > dnsmasq for ubuntu
-        > https://wiki.ubuntuusers.de/Dnsmasq/
-        > acrylic dns for windows
-        > https://mayakron.altervista.org/support/acrylic/Home.htm
+        > dnsmasq for mac \
+        > https://formulae.brew.sh/formula/dnsmasq \
+        > dnsmasq for ubuntu \
+        > https://wiki.ubuntuusers.de/Dnsmasq/ \
+        > acrylic dns for windows \
+        > https://mayakron.altervista.org/support/acrylic/Home.htm \
+        > \
+        > If you use acrylic dns change the following line in the configuration file: \
+        > `LocalIPv4BindingAddress=127.0.0.1` \
+        > to ensure that WSL2 can start correctly 
 
 7. **.ssh** and **.gitconfig** for the **cli** image will be mounted from the host home directory to the container user home directory as defined in the .env file. So the files need to be created and stored on the host first.
 
 8. **php.ini** changes can be made in **./data/php/php.ini**, the container needs to be restarted afterwards with `docker compose restart`.
 
-9. **xdebug.ini** changes can be made in **./data/php/xdebug.ini**, the container needs to be restarted afterwards with `docker compose restart`.
+9. **xdebug.ini** rename either **xdebug.ini.unix** for Mac and Linux or **xdebug.ini.wsl2** for Windows WSL2 to **xdebug.ini** in the **./data/php** directory, the container needs to be restarted afterwards with `docker compose restart`.
+
+    1. If you use WSL2, you need to take a few more extra steps to make step debugging work, check the following [gist](https://gist.github.com/Patrick-Gugelsberger/b3ec9453007bb33227472d75e192eaa2) for instructions.
+    2. Enter the chosen nameserver to your **xdebug.ini** file in the **xdebug.client_host** field. 
 
 10. **MariaDB Database** can be accessed with external database management tool like **dbeaver** and alike using **localhost:3306** as host. If you don't wish to use an external database tool you can use **phpmyadmin** in your browser by visiting **localhost:8080**. Databases will be persisted in **./databases** folder.
 

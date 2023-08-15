@@ -9,7 +9,7 @@ services:
         - APACHE_EXTENSIONS=${APACHE_EXTENSIONS}
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
         - PHP_VERSION=${PHP_VERSION}
-        - NAME=${NAME}
+        - USERNAME=${USERNAME}
     user: ${UID}:${GID}
     ports:
       - 80:80
@@ -29,7 +29,7 @@ services:
       args:
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
         - PHP_VERSION=8.0
-        - NAME=${NAME}
+        - USERNAME=${USERNAME}
     user: ${UID}:${GID}
     volumes:
       - ${WORKDIR}:/var/www/html/
@@ -47,7 +47,7 @@ services:
       args:
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
         - PHP_VERSION=8.1
-        - NAME=${NAME}
+        - USERNAME=${USERNAME}
     user: ${UID}:${GID}
     volumes:
       - ${WORKDIR}:/var/www/html/
@@ -65,7 +65,7 @@ services:
       args:
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
         - PHP_VERSION=8.2
-        - NAME=${NAME}
+        - USERNAME=${USERNAME}
     user: ${UID}:${GID}
     volumes:
       - ${WORKDIR}:/var/www/html/
@@ -85,16 +85,19 @@ services:
         - PHP_VERSION=${PHP_VERSION}
         - BASH_EXTENSIONS=${BASH_EXTENSIONS}
         - NODE_VERSION=${NODE_VERSION}
-        - NAME=${NAME}
+        - USERNAME=${USERNAME}
     user: ${UID}:${GID}
     volumes:
-     - ~/.ssh:/home/${NAME}/.ssh
-     - ~/.gitconfig:/home/${NAME}/.gitconfig
+     - ~/.ssh:/home/${USERNAME}/.ssh
+     - ~/.gitconfig:/home/${USERNAME}/.gitconfig
      - ${WORKDIR}:/var/www/html/
      - ./data/php/php.ini:/usr/local/etc/php/php.ini
      - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
     extra_hosts:
         host.docker.internal: host-gateway
+    networks:
+      lamp:
+        ipv4_address: ${IPV4}
   db:
     image: mariadb:latest
     restart: always
@@ -113,3 +116,9 @@ services:
       - PMA_HOST=db
     ports:
       - 8080:80
+networks:
+  lamp:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.2.0/24

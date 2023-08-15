@@ -22,19 +22,19 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | ba
 && nvm install ${NODE_VERSION}
 
 #create new user
-ARG NAME=$NAME
-RUN adduser $NAME 
+ARG USERNAME=$USERNAME
+RUN adduser $USERNAME 
 
 #move and change permission for required npm/nvm files
-RUN mv /root/.npm /home/$NAME/
-RUN mv /root/.nvm /home/$NAME/
-RUN chown $NAME:$NAME /home/$NAME/.npm
-RUN chown $NAME:$NAME /home/$NAME/.nvm
+RUN mv /root/.npm /home/$USERNAME/
+RUN mv /root/.nvm /home/$USERNAME/
+RUN chown $USERNAME:$USERNAME /home/$USERNAME/.npm
+RUN chown $USERNAME:$USERNAME /home/$USERNAME/.nvm
 
 #move and change permission from root user to new user
-RUN rm /home/$NAME/.bashrc
-RUN mv /root/.bashrc /home/$NAME/.bashrc
-RUN chown $NAME:$NAME /home/$NAME/.bashrc
+RUN rm /home/$USERNAME/.bashrc
+RUN mv /root/.bashrc /home/$USERNAME/.bashrc
+RUN chown $USERNAME:$USERNAME /home/$USERNAME/.bashrc
 
 #install desired php extensions
 ARG PHP_EXTENSIONS=${PHP_EXTENSIONS}
