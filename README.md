@@ -1,7 +1,7 @@
 # DOCKER PHP-DEV ENVIRONMENT
 
 ## Disclaimer
-This container is not intended for productive use it was not checked for security flaws and should only be used for development purposes.
+This container is not intended for productive use, as it was not checked for security flaws and should therefore only be used for development purposes.
 
 ## What it does
 This Docker container sets up a basic DEV environment for PHP/JS Development. It uses **apache2** as the webserver including **PHP**. **Domains** are handled via wildcard.
@@ -78,7 +78,7 @@ Required Modules: vhost_alias rewrite proxy_fcgi
         > `LocalIPv4BindingAddress=127.0.0.1` \
         > to ensure that WSL2 can start correctly 
 
-7. **.ssh** and **.gitconfig** for the **cli** image will be mounted from host home directory to container root user directory so the files need to be created and stored on host first.
+7. **.ssh** and **.gitconfig** for the **cli** image will be mounted from the host home directory to the container user home directory as defined in the .env file. So the files need to be created and stored on the host first.
 
 8. **php.ini** changes can be made in **./data/php/php.ini**, the container needs to be restarted afterwards with `docker compose restart`.
 
