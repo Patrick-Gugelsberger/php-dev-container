@@ -7,10 +7,7 @@ services:
       dockerfile: web.dockerfile
       args:
         - APACHE_EXTENSIONS=${APACHE_EXTENSIONS}
-        - PHP_EXTENSIONS=${PHP_EXTENSIONS}
-        - PHP_VERSION=${PHP_VERSION}
         - USERNAME=${USERNAME}
-    user: ${UID}:${GID}
     ports:
       - 80:80
       - 443:443

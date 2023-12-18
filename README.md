@@ -4,7 +4,7 @@
 This container is not intended for productive use, as it was not checked for security flaws and should therefore only be used for development purposes.
 
 ## What it does
-This Docker container sets up a basic DEV environment for PHP/JS Development. It uses **apache2** as the webserver including **PHP**. **Domains** are handled via wildcard.
+This Docker container sets up a basic DEV environment for PHP/JS Development. It uses **apache2** as the webserver. **Domains** are handled via wildcard.
 
 A **cli** is also included with **php, composer and node.js / npm** installed.
  
@@ -55,28 +55,13 @@ Required Modules: vhost_alias rewrite proxy_fcgi
 
 2. Use `docker compose --build` this will start pulling and building the images. This process will take a lot of time so be patient. If the **PHP_VERSION** is changed in the **.env** file the build process for the cli container needs to be repeated. This step is only needed once for every **PHP_VERSION** if you need them.
 
-3. If you need to switch the server php-fpm version, create an empty file in your project root with one of the following names: php8.0 / php8.1 / php8.2 no restart required.
+3. If you need to switch the server php-fpm version, create an empty file in your project root with one of the following names: 80.phpversion / 81.phpversion / 82.phpversion no restart required.
 
 4. Once the images are built, the container can be started with `docker compose up -d`.
 
-5. All your projects will be reachable via wildcard domain, the pattern is **foldername.test** to reach the **root** of your project or **foldername.public.test** to reach the **public** folder of your project, if you wish to change the domain ending it has to be changed in **./data/apache/wildcard.conf** on line 2
+5. All your projects will be reachable via wildcard domain, the pattern is **foldername.localhost** to reach the **root** of your project or **foldername.public.localhost** to reach the **public** folder of your project, if you wish to change the domain ending it has to be changed in **./data/apache/wildcard.conf** on line 2
 
-6. There are multiple ways to reach wildcard domains:
-    1. Edit your local host file and add entries in the following pattern:
-        > 127.0.0.1 foldername.test \
-        > ::1 foldername.test
-    2. (Recommended)
-    Use a service like **dnsmasq** for mac/linux or **acrylic dns** for windows to support wildcard dns. (look up tutorials for usage)
-        > dnsmasq for mac \
-        > https://formulae.brew.sh/formula/dnsmasq \
-        > dnsmasq for ubuntu \
-        > https://wiki.ubuntuusers.de/Dnsmasq/ \
-        > acrylic dns for windows \
-        > https://mayakron.altervista.org/support/acrylic/Home.htm \
-        > \
-        > If you use acrylic dns change the following line in the configuration file: \
-        > `LocalIPv4BindingAddress=127.0.0.1` \
-        > to ensure that WSL2 can start correctly 
+6. Domains ending in .localhost always loop back to 127.0.0.1 so there is no need for a dns service like dnsmasq.
 
 7. **.ssh** and **.gitconfig** for the **cli** image will be mounted from the host home directory to the container user home directory as defined in the .env file. So the files need to be created and stored on the host first.
 

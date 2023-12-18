@@ -1,7 +1,5 @@
-ARG PHP_VERSION=${PHP_VERSION}
-
 ##########################################################################################################
-FROM php:${PHP_VERSION}-apache
+FROM ubuntu/apache2:latest
 
 #update/upgrade packages
 RUN apt-get update -y && apt-get upgrade -y
