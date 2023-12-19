@@ -3,4 +3,4 @@ zend_extension=xdebug
 [xdebug]
 xdebug.mode=develop,debug
 xdebug.client_host=
-xdebug.start_with_request=trigger
+xdebug.start_with_request=1
