@@ -69,9 +69,6 @@ Required Modules: vhost_alias rewrite proxy_fcgi
 
 9. **xdebug.ini** rename either **xdebug.ini.unix** for Mac and Linux or **xdebug.ini.wsl2** for Windows WSL2 to **xdebug.ini** in the **./data/php** directory, the container needs to be restarted afterwards with `docker compose restart`.
 
-    1. If you use WSL2, you need to take a few more extra steps to make step debugging work, check the following [gist](https://gist.github.com/Patrick-Gugelsberger/b3ec9453007bb33227472d75e192eaa2) for instructions.
-    2. Enter the chosen nameserver to your **xdebug.ini** file in the **xdebug.client_host** field. 
-
 10. **MariaDB Database** can be accessed with external database management tool like **dbeaver** and alike using **localhost:3306** as host. If you don't wish to use an external database tool you can use **phpmyadmin** in your browser by visiting **localhost:8080**. Databases will be persisted in **./databases** folder.
 
 11. To access the **bash cli** run the following command to start a cli container which closes itself after exiting: `docker compose run --rm cli`
