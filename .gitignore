@@ -1,4 +1,4 @@
 databases/*
 .env
 data/php/xdebug.ini
-data/php/xdebug.ini.unix
+.idea
