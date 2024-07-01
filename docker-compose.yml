@@ -1,4 +1,3 @@
-version: '3'
 services:
   web:
     image: ubuntu/apache2:latest
@@ -14,7 +13,9 @@ services:
       - ./data/php/php.ini:/usr/local/etc/php/php.ini
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock:/sock
-    network_mode: host
+    ports:
+      - 80:80
+    stop_grace_period: 0.3s
   php-8.0:
     image: php:8.0-fpm-alpine
     build: 
@@ -31,7 +32,6 @@ services:
       - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock/8.0:/sock
-    network_mode: host
   php-8.1:
     image: php:8.1-fpm-alpine
     build: 
@@ -48,7 +48,6 @@ services:
       - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock/8.1:/sock
-    network_mode: host
   php-8.2:
     image: php:8.2-fpm-alpine
     build: 
@@ -65,25 +64,6 @@ services:
       - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock/8.2:/sock
-    network_mode: host
-  cli:
-    image: php:${PHP_VERSION}-cli
-    build: 
-      context: ./dockerfiles
-      dockerfile: cli.dockerfile
-      args:
-        - PHP_EXTENSIONS=${PHP_EXTENSIONS}
-        - PHP_VERSION=${PHP_VERSION}
-        - BASH_EXTENSIONS=${BASH_EXTENSIONS}
-        - NODE_VERSION=${NODE_VERSION}
-        - USERNAME=${USERNAME}
-    user: ${UID}:${GID}
-    volumes:
-     - ~/.ssh:/home/${USERNAME}/.ssh
-     - ~/.gitconfig:/home/${USERNAME}/.gitconfig
-     - ${WORKDIR}:/var/www/html/
-     - ./data/php/php.ini:/usr/local/etc/php/php.ini
-    network_mode: host
   db:
     image: mariadb:latest
     restart: always
@@ -93,4 +73,5 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - ./databases:/var/lib/mysql
-    network_mode: host
+    ports:
+      - 3306:3306
