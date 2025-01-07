@@ -1,4 +1,3 @@
-version: '3'
 services:
   web:
     image: ubuntu/apache2:latest
@@ -14,7 +13,21 @@ services:
       - ./data/php/php.ini:/usr/local/etc/php/php.ini
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock:/sock
-    network_mode: host
+    ports:
+      - 80:80
+    stop_grace_period: 0.3s
+    networks:
+      default:
+        aliases:
+          - wordpress.test
+          - presta.test
+          - prestashop.test
+          - prestashop.jtl.test
+          - shopware6-connector.public.test
+          - shopware6.public.test
+          - shopware6-connector-saas.public.test
+          - credentials-service.public.test
+          - shopify-connector.public.test
   php-8.0:
     image: php:8.0-fpm-alpine
     build: 
@@ -31,7 +44,6 @@ services:
       - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock/8.0:/sock
-    network_mode: host
   php-8.1:
     image: php:8.1-fpm-alpine
     build: 
@@ -48,7 +60,6 @@ services:
       - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock/8.1:/sock
-    network_mode: host
   php-8.2:
     image: php:8.2-fpm-alpine
     build: 
@@ -65,25 +76,22 @@ services:
       - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock/8.2:/sock
-    network_mode: host
-  cli:
-    image: php:${PHP_VERSION}-cli
+  php-8.3:
+    image: php:8.3-fpm-alpine
     build: 
       context: ./dockerfiles
-      dockerfile: cli.dockerfile
+      dockerfile: fpm.dockerfile
       args:
         - PHP_EXTENSIONS=${PHP_EXTENSIONS}
-        - PHP_VERSION=${PHP_VERSION}
-        - BASH_EXTENSIONS=${BASH_EXTENSIONS}
-        - NODE_VERSION=${NODE_VERSION}
+        - PHP_VERSION=8.3
         - USERNAME=${USERNAME}
     user: ${UID}:${GID}
     volumes:
-     - ~/.ssh:/home/${USERNAME}/.ssh
-     - ~/.gitconfig:/home/${USERNAME}/.gitconfig
-     - ${WORKDIR}:/var/www/html/
-     - ./data/php/php.ini:/usr/local/etc/php/php.ini
-    network_mode: host
+      - ${WORKDIR}:/var/www/html/
+      - ./data/php/php.ini:/usr/local/etc/php/php.ini
+      - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
+      - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./sock/8.3:/sock
   db:
     image: mariadb:latest
     restart: always
@@ -93,4 +101,18 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
       - ./databases:/var/lib/mysql
-    network_mode: host
+    ports:
+      - 3306:3306
+  wawidb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=
+      - MSSQL_OID=Express
+      - MSSQL_COLLATION=Latin1_General_CI_AS
+    ports:
+      - 1433:1433
+    volumes:
+      - ./mssql/db/:/var/opt/mssql/data/
+      - ./mssql/log/:/var/opt/mssql/log/
+      - ./mssql/secrets/:/var/opt/mssql/secrets/
