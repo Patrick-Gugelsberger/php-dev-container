@@ -1,6 +1,7 @@
 services:
   web:
     image: ubuntu/apache2:latest
+    container_name: "web"
     build:
       context: ./dockerfiles
       dockerfile: web.dockerfile
@@ -16,9 +17,15 @@ services:
     ports:
       - 80:80
     stop_grace_period: 0.3s
+    networks:
+      default:
+        aliases:
+          # enter urls that should be available via curl in the web container here, e.g.:
+          # - myapp.test
   php-8.0:
     image: php:8.0-fpm-alpine
-    build:
+    container_name: php8.0
+    build: 
       context: ./dockerfiles
       dockerfile: fpm.dockerfile
       args:
@@ -34,7 +41,8 @@ services:
       - ./sock/8.0:/sock
   php-8.1:
     image: php:8.1-fpm-alpine
-    build:
+    container_name: php8.1
+    build: 
       context: ./dockerfiles
       dockerfile: fpm.dockerfile
       args:
@@ -50,7 +58,8 @@ services:
       - ./sock/8.1:/sock
   php-8.2:
     image: php:8.2-fpm-alpine
-    build:
+    container_name: php8.2
+    build: 
       context: ./dockerfiles
       dockerfile: fpm.dockerfile
       args:
@@ -66,7 +75,8 @@ services:
       - ./sock/8.2:/sock
   php-8.3:
     image: php:8.3-fpm-alpine
-    build:
+    container_name: php8.3
+    build: 
       context: ./dockerfiles
       dockerfile: fpm.dockerfile
       args:
@@ -82,7 +92,8 @@ services:
       - ./sock/8.3:/sock
   php-8.4:
     image: php:8.4-fpm-alpine
-    build:
+    container_name: php8.4
+    build: 
       context: ./dockerfiles
       dockerfile: fpm.dockerfile
       args:
@@ -96,8 +107,26 @@ services:
       - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
       - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
       - ./sock/8.4:/sock
+  php-8.5:
+    image: php:8.5-fpm-alpine
+    container_name: php8.5
+    build: 
+      context: ./dockerfiles
+      dockerfile: fpm.dockerfile
+      args:
+        - PHP_EXTENSIONS=${PHP_EXTENSIONS}
+        - PHP_VERSION=8.5
+        - USERNAME=${USERNAME}
+    user: ${UID}:${GID}
+    volumes:
+      - ${WORKDIR}:/var/www/html/
+      - ./data/php/php.ini:/usr/local/etc/php/php.ini
+      - ./data/php/fpm.conf:/usr/local/etc/php-fpm.d/zz-docker.conf
+      - ./data/php/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+      - ./sock/8.5:/sock
   db:
     image: mariadb:latest
+    container_name: mysql
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -107,3 +136,17 @@ services:
       - ./databases:/var/lib/mysql
     ports:
       - 3306:3306
+  wawidb:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=
+      - MSSQL_OID=Express
+      - MSSQL_COLLATION=Latin1_General_CI_AS
+    ports:
+      - 1433:1433
+    volumes:
+      - ./mssql/db/:/var/opt/mssql/data/
+      - ./mssql/log/:/var/opt/mssql/log/
+      - ./mssql/secrets/:/var/opt/mssql/secrets/
